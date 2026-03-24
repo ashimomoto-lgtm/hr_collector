@@ -32,17 +32,21 @@ DASHBOARD_DIR = DIR / "dashboard"
 
 
 def get_credentials():
-    """認証情報を取得。サービスアカウント→OAuthトークン→ブラウザ認証の順で試行。"""
-    # 1. サービスアカウント（CI / クラウド環境向け）
-    sa_file = DIR / "service_account.json"
-    if sa_file.exists():
-        from google.oauth2 import service_account
-        print("  サービスアカウント認証を使用")
-        return service_account.Credentials.from_service_account_file(
-            str(sa_file), scopes=SCOPES
-        )
+    """認証情報を取得。OAuthトークン（環境変数 or ファイル）→ブラウザ認証の順で試行。"""
+    import json
 
-    # 2. 既存OAuthトークン（ローカル開発向け）
+    # 1. 環境変数からOAuthトークン（CI / GitHub Actions向け）
+    oauth_token_json = os.environ.get("GOOGLE_OAUTH_TOKEN")
+    if oauth_token_json:
+        print("  環境変数からOAuthトークンを使用（CI モード）")
+        token_data = json.loads(oauth_token_json)
+        creds = Credentials.from_authorized_user_info(token_data, SCOPES)
+        if not creds.valid and creds.expired and creds.refresh_token:
+            print("  トークンを更新中...")
+            creds.refresh(Request())
+        return creds
+
+    # 2. 既存OAuthトークンファイル（ローカル開発向け）
     creds = None
     if TOKEN_FILE.exists():
         creds = Credentials.from_authorized_user_file(str(TOKEN_FILE), SCOPES)

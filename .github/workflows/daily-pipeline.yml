@@ -24,8 +24,8 @@ jobs:
       - name: Create output directories
         run: mkdir -p output plans dashboard logs
 
-      - name: Prepare Drive credentials
-        run: echo '${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}' > service_account.json
+      - name: Prepare Drive credentials (unused, kept for reference)
+        run: echo "Using OAuth token via GOOGLE_OAUTH_TOKEN env var"
 
       - name: Step 1 - Collect HR topics
         run: python collect_hr_topics.py
@@ -50,7 +50,7 @@ jobs:
         run: python upload_to_drive.py
         timeout-minutes: 3
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GOOGLE_OAUTH_TOKEN: ${{ secrets.GOOGLE_OAUTH_TOKEN }}
 
       - name: Upload artifacts (backup)
         uses: actions/upload-artifact@v4
