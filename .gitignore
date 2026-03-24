@@ -1,0 +1,18 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Sensitive credentials
+credentials.json
+token.json
+token_readonly.json
+service_account.json
+
+# Output data (persisted via Drive + GitHub Artifacts)
+output/
+plans/
+dashboard/
+logs/
+newsletter/
+cta_output/

@@ -1,0 +1,64 @@
+name: HR Daily Pipeline
+
+on:
+  schedule:
+    - cron: '0 23 * * *'  # JST 8:00 AM (UTC 23:00 前日)
+  workflow_dispatch:       # 手動トリガー
+
+jobs:
+  daily-pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Create output directories
+        run: mkdir -p output plans dashboard logs
+
+      - name: Prepare Drive credentials
+        run: echo '${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}' > service_account.json
+
+      - name: Step 1 - Collect HR topics
+        run: python collect_hr_topics.py
+        timeout-minutes: 10
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+
+      - name: Step 2 - Generate content plans
+        run: python generate_plans.py
+        timeout-minutes: 5
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+
+      - name: Step 3 - Generate dashboard
+        run: python generate_dashboard.py
+        timeout-minutes: 5
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          CI: 'true'
+
+      - name: Step 4 - Upload to Google Drive
+        run: python upload_to_drive.py
+        timeout-minutes: 3
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+
+      - name: Upload artifacts (backup)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hr-pipeline-${{ github.run_number }}
+          path: |
+            output/
+            plans/
+            dashboard/
+          retention-days: 30
