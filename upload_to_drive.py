@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-ダッシュボードHTMLをGoogle Driveにアップロードするスクリプト。
+ダッシュボードHTMLをPDFに変換してGoogle Driveにアップロードするスクリプト。
 
 初回実行時にブラウザでOAuth認証が必要。
 認証後はトークンが token.json に保存され、以降は自動実行可能。
@@ -20,6 +20,7 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
+from playwright.sync_api import sync_playwright
 
 # --- 設定 ---
 SCOPES = ["https://www.googleapis.com/auth/drive.file"]
@@ -73,7 +74,22 @@ def get_credentials():
     return creds
 
 
-def upload_file(service, local_path, folder_id):
+def convert_html_to_pdf(html_path: Path) -> Path:
+    """PlaywrightでHTMLをPDFに変換。"""
+    pdf_path = html_path.with_suffix(".pdf")
+    print(f"  HTML → PDF 変換中: {html_path.name}")
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page()
+        page.goto(f"file://{html_path.resolve()}")
+        page.wait_for_load_state("networkidle")
+        page.pdf(path=str(pdf_path), format="A4", print_background=True)
+        browser.close()
+    print(f"  PDF生成完了: {pdf_path.name}")
+    return pdf_path
+
+
+def upload_file(service, local_path, folder_id, mimetype="application/pdf"):
     """ファイルをGoogle Driveにアップロード。同名ファイルがあれば上書き。"""
     filename = local_path.name
 
@@ -82,7 +98,7 @@ def upload_file(service, local_path, folder_id):
     results = service.files().list(q=query, fields="files(id, name)").execute()
     existing = results.get("files", [])
 
-    media = MediaFileUpload(str(local_path), mimetype="text/html", resumable=True)
+    media = MediaFileUpload(str(local_path), mimetype=mimetype, resumable=True)
 
     if existing:
         # 上書き更新
@@ -122,10 +138,14 @@ def main():
     print(f"Google Driveへアップロード: {dashboard_path.name}")
     print(f"  アップロード先フォルダ: {FOLDER_ID}")
 
+    # HTML → PDF変換
+    pdf_path = convert_html_to_pdf(dashboard_path)
+
     creds = get_credentials()
     service = build("drive", "v3", credentials=creds)
 
-    upload_file(service, dashboard_path, FOLDER_ID)
+    # PDFをアップロード
+    upload_file(service, pdf_path, FOLDER_ID, mimetype="application/pdf")
     print("完了!")
 
 

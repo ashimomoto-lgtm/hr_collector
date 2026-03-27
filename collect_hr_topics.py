@@ -20,7 +20,6 @@ import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 from time import mktime, sleep
-from urllib.parse import quote
 
 # ── 設定 ─────────────────────────────────────────────────
 OUTPUT_DIR = Path(__file__).parent / "output"
@@ -65,41 +64,46 @@ RSS_FEEDS = {
     # ── ビジネスメディア（キーワードフィルタ必要）──
     "ビジネスメディア": [
         ("東洋経済オンライン", "https://toyokeizai.net/list/feed/rss", True),
-        ("ダイヤモンド・オンライン", "https://diamond.jp/feed/index.xml", True),
+        ("ダイヤモンド・オンライン", "https://diamond.jp/list/feed/rss/dol", True),
         ("ITmedia ビジネス", "https://rss.itmedia.co.jp/rss/2.0/bizid.xml", True),
-        ("プレジデントオンライン", "https://president.jp/rss/", True),
-        ("日経ビジネス", "https://business.nikkei.com/rss/sns/nb.rss", True),
+        ("プレジデントオンライン", "https://president.jp/list/rss", True),
+        ("日経ビジネス", "https://business.nikkei.com/rss/sns/nb.rdf", True),
     ],
 
     # ── シンクタンク・研究所 ──
     "シンクタンク": [
-        ("パーソル総合研究所", "https://rc.persol-group.co.jp/rss/index.xml", False),
-        ("リクルートワークス研究所", "https://www.works-i.com/feed", False),
+        ("パーソル総合研究所（コラム）", "https://rc.persol-group.co.jp/wp-content/json/column.json", False),
         ("リクルートMC 調査データ", "https://www.recruit.co.jp/newsroom/pressrelease/feed/", True),
     ],
 
-    # ── Google News RSS（キーワード別）──
-    "Google News": [
-        (f"Google News「{kw}」", f"https://news.google.com/rss/search?q={quote(kw)}&hl=ja&gl=JP&ceid=JP:ja", False)
-        for kw in ["人事 1on1", "マネジメント 管理職", "人的資本経営", "エンゲージメント 組織",
-                    "タレントマネジメント", "心理的安全性", "リスキリング 人材育成",
-                    "CHRO 人事部", "評価制度 目標管理", "オンボーディング 採用"]
-    ],
-
-    # ── はてなブックマーク（キーワード別ホットエントリ）──
-    "はてなブックマーク": [
-        (f"はてブ「{kw}」", f"https://b.hatena.ne.jp/search/tag?q={quote(kw)}&mode=rss&sort=recent", False)
-        for kw in ["人事", "1on1", "マネジメント", "組織開発", "人的資本",
-                    "エンゲージメント", "心理的安全性", "リーダーシップ"]
-    ],
-
-    # ── note（ハッシュタグ別）──
-    "note": [
-        (f"note #{kw}", f"https://note.com/hashtag/{quote(kw)}?f=new&rss", False)
-        for kw in ["人事", "1on1", "マネジメント", "管理職", "組織開発",
-                    "人的資本", "キャリア", "人材育成", "リーダーシップ"]
-    ],
 }
+
+
+def fetch_persol_json(name: str, url: str) -> list[dict]:
+    """パーソル総合研究所のJSON APIからエントリを取得"""
+    try:
+        resp = requests.get(url, headers=HEADERS, timeout=REQUEST_TIMEOUT)
+        resp.raise_for_status()
+        data = resp.json()
+        entries = []
+        for post in data.get("posts", [])[:30]:  # 最新30件
+            # 日付を正規化（"2026年03月25日" → "2026-03-25"）
+            date_str = post.get("date", "")
+            date_norm = re.sub(r"(\d{4})年(\d{2})月(\d{2})日", r"\1-\2-\3", date_str)
+            post_link = post.get("post_link", "")
+            if post_link and not post_link.startswith("http"):
+                post_link = "https://rc.persol-group.co.jp" + post_link
+            entries.append({
+                "title": post.get("post_title", "（タイトルなし）").strip(),
+                "url": post_link,
+                "date": date_norm,
+                "source": name,
+                "summary": post.get("abstract", "").strip()[:200],
+            })
+        return entries
+    except Exception as e:
+        print(f"  ⚠ {name}: {e}")
+        return []
 
 
 def fetch_feed(name: str, url: str) -> list[dict]:
@@ -226,7 +230,10 @@ def main():
         errors = 0
 
         for name, url, needs_filter in feeds:
-            entries = fetch_feed(name, url)
+            if url.endswith(".json"):
+                entries = fetch_persol_json(name, url)
+            else:
+                entries = fetch_feed(name, url)
             if not entries:
                 errors += 1
                 continue
