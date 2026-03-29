@@ -67,3 +67,46 @@ jobs:
             plans/
             dashboard/
           retention-days: 30
+
+  deploy-pages:
+    needs: daily-pipeline
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Download pipeline artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: hr-pipeline-${{ github.run_number }}
+          path: staging/
+
+      - name: Fetch existing gh-pages content
+        run: |
+          git fetch origin gh-pages || true
+          if git rev-parse --verify origin/gh-pages >/dev/null 2>&1; then
+            git worktree add gh-pages-old origin/gh-pages
+            # Merge existing files (no-clobber: keep new over old)
+            cp -rn gh-pages-old/dashboard/ staging/dashboard/ 2>/dev/null || true
+            cp -rn gh-pages-old/plans/ staging/plans/ 2>/dev/null || true
+            cp -rn gh-pages-old/cta_output/ staging/cta_output/ 2>/dev/null || true
+            git worktree remove gh-pages-old --force
+          fi
+
+      - name: Generate index page
+        run: python generate_index.py --root staging
+
+      - name: Add .nojekyll
+        run: touch staging/.nojekyll
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./staging
+          publish_branch: gh-pages
