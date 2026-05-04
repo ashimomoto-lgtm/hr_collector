@@ -40,3 +40,6 @@ python generate_dashboard.py
 ## 注意事項
 - Gemini APIのレスポンスはJSON破損が起きることがある。エラー時は再試行する
 - Google Drive uploadはtoken期限切れで失敗することがある。その場合はsetup.shを再実行
+
+## 編集判断時の参照軸
+編集判断（記事企画 / SEO / メルマガ / CTA / KPI設計）が絡む依頼では `editor-playbook-kajiken` Skill を参照する（`~/.claude/skills/user/editor-playbook-kajiken/`）。
