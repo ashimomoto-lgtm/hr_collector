@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HR Daily Dashboard — 2026-10-09</title>
+  <style>
+    :root {
+      --bg: #F8FAFC;
+      --surface: #FFFFFF;
+      --border: #E2E8F0;
+      --text: #1E293B;
+      --text-sub: #64748B;
+      --blue: #3B82F6;
+      --blue-bg: #EFF6FF;
+      --amber: #F59E0B;
+      --amber-bg: #FFFBEB;
+      --green: #10B981;
+      --green-bg: #ECFDF5;
+      --purple: #8B5CF6;
+      --purple-bg: #F5F3FF;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    .container { max-width: 1100px; margin: 0 auto; padding: 24px 20px; }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, #1E3A5F 0%, #2563EB 100%);
+      color: white;
+      padding: 32px 0;
+      margin-bottom: 32px;
+    }
+    header .container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+    header h1 { font-size: 24px; font-weight: 700; }
+    header .date { font-size: 14px; opacity: 0.85; }
+    .stats { display: flex; gap: 16px; }
+    .stat-box {
+      background: rgba(255,255,255,0.15);
+      border-radius: 8px;
+      padding: 8px 16px;
+      text-align: center;
+      font-size: 13px;
+    }
+    .stat-box .num { font-size: 22px; font-weight: 700; display: block; }
+
+    /* ── Section ── */
+    .section { margin-bottom: 40px; }
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      font-size: 14px;
+      font-weight: 700;
+      color: white;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin-bottom: 12px;
+      transition: box-shadow 0.15s;
+    }
+    .card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+
+    /* ── Highlights ── */
+    .highlight-card .card-header a {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--blue);
+      text-decoration: none;
+    }
+    .highlight-card .card-header a:hover { text-decoration: underline; }
+    .highlight-card .meta {
+      display: block;
+      font-size: 12px;
+      color: var(--text-sub);
+      margin-top: 4px;
+    }
+    .highlight-card .summary {
+      font-size: 14px;
+      color: var(--text);
+      margin: 10px 0 8px;
+    }
+    .highlight-card .reason {
+      font-size: 13px;
+      color: var(--text-sub);
+    }
+    .reason-badge {
+      display: inline-block;
+      background: var(--green-bg);
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-right: 4px;
+    }
+    .date-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-right: 6px;
+    }
+    .highlight-group-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      margin-top: 0;
+      padding-left: 0;
+    }
+    .theme-section {
+      margin-bottom: 28px;
+    }
+
+    /* ── Trends ── */
+    .trend-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+    .trend-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .trend-box h3 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .trend-box h3 .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .trend-box p { font-size: 14px; color: var(--text); }
+
+    /* ── Plans ── */
+    .plan-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(480px, 1fr)); gap: 14px; }
+    .plan-card { padding: 16px 20px; }
+    .plan-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .plan-header h3 { font-size: 15px; font-weight: 600; }
+    .plan-badge {
+      font-size: 11px;
+      font-weight: 700;
+      color: white;
+      padding: 3px 10px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .plan-table { width: 100%; font-size: 13px; border-collapse: collapse; }
+    .plan-table th {
+      text-align: left;
+      width: 110px;
+      padding: 5px 8px;
+      color: var(--text-sub);
+      font-weight: 600;
+      vertical-align: top;
+      border-bottom: 1px solid var(--border);
+    }
+    .plan-table td {
+      padding: 5px 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .resource-tag {
+      display: inline-block;
+      background: var(--purple-bg);
+      color: var(--purple);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-sub);
+      padding: 24px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 600px) {
+      .plan-grid { grid-template-columns: 1fr; }
+      .trend-grid { grid-template-columns: 1fr; }
+      .stats { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div>
+      <h1>HR Daily Dashboard</h1>
+      <p class="date">2026-10-09（1on1総研 企画会議用）</p>
+    </div>
+    <div class="stats">
+      <div class="stat-box"><span class="num">107</span>収集記事</div>
+      <div class="stat-box"><span class="num">72</span>注目記事</div>
+      <div class="stat-box"><span class="num">6</span>企画案</div>
+      <div class="stat-box"><span class="num">6 / 0</span>Brand / Lead</div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Section 1: 注目記事 -->
+  <div class="section">
+    <h2 class="section-title">
+      <span class="section-num" style="background:var(--blue)">1</span>
+      本日の注目記事（72本: 当日・前日 27 + 直近1週間 45）
+    </h2>
+    
+        <div class="theme-section" style="border-left:4px solid #3B82F6; padding-left:16px; margin-bottom:28px;">
+          <h3 class="highlight-group-title" style="color:#3B82F6">
+            1on1・対話関連（4本）<span style="color:var(--text-sub);font-size:13px;margin-left:8px;">最新事例・研究・実践tips</span>
+          </h3>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://business.nikkei.com/atcl/seminar/21nv/00065/092800003/" target="_blank" rel="noopener">「現場はこの人と働きたいか」を採用基準に　経営目線より社員目線で定着増 (人材採用の「ひと手間」)</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-10-06</span>
+                  日経ビジネス
+                </span>
+              </div>
+              <p class="summary">採用活動に携わっていると、求職者や社外に関心が向きがちだ。だが受け入れる現場とコミュニケーションを取っておくことが大切。採用した人の定着だけでなく、次の採用にも効果を発揮する。</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://hrzine.jp/news/detail/8179" target="_blank" rel="noopener">「Kakeai AI 1on1」を提供開始　20年から提供した1on1サービスを刷新し—KAKEAI</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-10-05</span>
+                  HRzine
+                </span>
+              </div>
+              <p class="summary">「Kakeai AI 1on1」を提供開始　20年から提供した1on1サービスを刷新し—KAKEAI</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://rc.persol-group.co.jp/column/solution-column/202609290000/" target="_blank" rel="noopener">キャリア開発風土醸成へ―管理職の役割と求められる教育【第6回】キャリア面談力向上へ研修設計のポイント</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-09-29</span>
+                  パーソル総合研究所（コラム）
+                </span>
+              </div>
+              <p class="summary">キャリア開発風土醸成へ―管理職の役割と求められる教育【第6回】キャリア面談力向上へ研修設計のポイント</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://rc.persol-group.co.jp/column/solution-column/202608080000/" target="_blank" rel="noopener">キャリア開発風土醸成へ―管理職の役割と求められる教育【第5回】キャリア面談の進め方</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-08-28</span>
+                  パーソル総合研究所（コラム）
+                </span>
+              </div>
+              <p class="summary">キャリア開発風土醸成へ―管理職の役割と求められる教育【第5回】キャリア面談の進め方</p>
+              
+            </div></div>
+        <div class="theme-section" style="border-left:4px solid #F59E0B; padding-left:16px; margin-bottom:28px;">
+          <h3 class="highlight-group-title" style="color:#F59E0B">
+            マネジメント課題（18本）<span style="color:var(--text-sub);font-size:13px;margin-left:8px;">管理職の悩み・負担・スキル不足</span>
+          </h3>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://toyokeizai.net/articles/-/958450?utm_source=rss&amp;utm_medium=http&amp;utm_campaign=link_back" target="_blank" rel="noopener">若手の9割が望まない｢定番のボウリング大会｣はなぜなくならないのか? 労働組合が抱える《組合員との致命的なズレ》 | キャリア・教育 | 東洋経済オンライン</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:var(--blue-bg);color:var(--blue)">2026-10-09</span>
+                  東洋経済オンライン
+                </span>
+              </div>
+              <p class="summary">｢組合活動はタイパもコスパも悪い｣と言われる現代､休日や業務後の活動負担が若者との距離感を生んでいます。手当やレクリエーションに頼る体質は､果たして組合員の本音と合致しているのでしょうか。今､組合の…</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://diamond.jp/articles/-/400731" target="_blank" rel="noopener">あなたの違和感は正しい。「仕事ができる人ほど損をする職場」に共通すること - 組織の違和感 結局、リーダーは何を変えればいいのか？</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:var(--blue-bg);color:var(--blue)">2026-10-08</span>
+                  ダイヤモンド・オンライン
+                </span>
+              </div>
+              <p class="summary">2万人をみてきた組織開発コンサルタントで『組織の違和感』の著者である勅使川原真衣氏が、実際に職場に分け入って考えた、組織変革のコツを伝えます。</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://diamond.jp/articles/-/400016" target="_blank" rel="noopener">50代「ハラスメントが怖くて指示が出せない上司」の惨めな末路 - リーダーの仮面</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:var(--blue-bg);color:var(--blue)">2026-10-08</span>
+                  ダイヤモンド・オンライン
+                </span>
+              </div>
+              <p class="summary">「これを言ったらハラスメントになるのでは…」「部下から嫌われたくない…」。ハラスメントに怯え、部下に仕事を頼む際に「お伺い」を立てる50代管理職が急増しています。しかし、その態度は部下に見透かされ、かえってバカにされる惨めな結果を招きます。</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://business.nikkei.com/atcl/gen/19/00936/100500001/" target="_blank" rel="noopener">［新連載］ゼンショー、株価373倍の異次元成長 小川賢太郎「世界一」への執念 (ゼンショー 逆転の法則)</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:var(--blue-bg);color:var(--blue)">2026-10-08</span>
+                  日経ビジネス
+                </span>
+              </div>
+              <p class="summary">半導体株の狂騒に沸く株式市場の陰で、直近30年間の株価上昇率ランキングで日本一に君臨する企業がある。外食業界で日本初の売上高1兆円を突破したゼンショーホールディングスだ。上昇率は約373倍で2位のファーストリテイリングをしのぐ。今春逝去した</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://business.nikkei.com/atcl/NBD/19/special/02665/" target="_blank" rel="noopener">「失われた30年」で株価373倍　日本の停滞期駆け抜けた「巨星」 (ゼンショー　逆転の法則　小川賢太郎が遺した理念と実践)</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:var(--blue-bg);color:var(--blue)">2026-10-08</span>
+                  日経ビジネス
+                </span>
+              </div>
+              <p class="summary">「失われた30年」にあらがうかのように大きく成長してきたゼンショーホールディングス。創業者の故・小川賢太郎氏による先見の明と強力なリーダーシップが成長をけん引した。</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://business.nikkei.com/atcl/NBD/19/00121/00374/" target="_blank" rel="noopener">フューチャー金丸会長「リスクマネジメントは短期的なコスパを度外視すべき」 (賢人の警鐘)</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:var(--blue-bg);color:var(--blue)">2026-10-08</span>
+                  日経ビジネス
+                </span>
+              </div>
+              <p class="summary">今年の夏以降、熊本地震や各地での豪雨被害など、大規模な自然災害が相次いでいる。千葉の豪雨では浸水や内水氾濫の想定区域外でも被害が多発するなど、ハザードマップの死角が浮き彫りになった。私は自治体や企業の事業継続計画（BCP）も課題が多いと思っ</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://rc.persol-group.co.jp/thinktank/thinktank-column/202610080001/" target="_blank" rel="noopener">管理職が退任後のキャリアを充実させるために知っておくべき20のこと</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:var(--blue-bg);color:var(--blue)">2026-10-08</span>
+                  パーソル総合研究所（コラム）
+                </span>
+              </div>
+              <p class="summary">管理職が退任後のキャリアを充実させるために知っておくべき20のこと</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://hrzine.jp/news/detail/8187" target="_blank" rel="noopener">豊田通商が若手・管理職のラーニングアジリティ向上へ研修を実施—アルー</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-10-07</span>
+                  HRzine
+                </span>
+              </div>
+              <p class="summary">豊田通商が若手・管理職のラーニングアジリティ向上へ研修を実施—アルー</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://rc.persol-group.co.jp/thinktank/thinktank-column/202610070001/" target="_blank" rel="noopener">相談が来ない上司たち―AI環境のマネジメントのアップデート</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-10-07</span>
+                  パーソル総合研究所（コラム）
+                </span>
+              </div>
+              <p class="summary">相談が来ない上司たち―AI環境のマネジメントのアップデート</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://hrzine.jp/news/detail/8183" target="_blank" rel="noopener">プロコーチ×AIで管理職研修後の行動変容を可視化する伴走サービスをNEWONEと共同開発—HQ</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-10-06</span>
+                  HRzine
+                </span>
+              </div>
+              <p class="summary">プロコーチ×AIで管理職研修後の行動変容を可視化する伴走サービスをNEWONEと共同開発—HQ</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://jinjibu.jp/news/detl/26955/" target="_blank" rel="noopener">【書籍紹介】『成長組織の先読み人事戦略』（森 洋一郎：著）日本能率協会マネジメントセンターより刊行</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-10-06</span>
+                  日本の人事部（ニュース）
+                </span>
+              </div>
+              <p class="summary">『成長組織の先読み人事戦略』（森 洋一郎：著）が、日本能率協会マネジメントセンターより刊行されました。企業の成長に立ち塞がる「成長フェーズごとの壁」は、必ず起きるからこそ先手が打てる！必ず訪れる人事...</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://business.nikkei.com/atcl/seminar/19/00118/00427/" target="_blank" rel="noopener">遺書の「死んどけ」が問う安全管理体制　四国電力送配電、19歳の転落死 (河合薫　上司と部下の力学)</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-10-06</span>
+                  日経ビジネス
+                </span>
+              </div>
+              <p class="summary">組織という“魔物”の冷血さをまざまざと見せつけられた記者会見だった。四国電力送配電の19歳の社員が鉄塔から転落して亡くなり、パワーハラスメントを訴える遺書が見つかった問題で、同社幹部らが徳島県庁で記者会見を開いた。</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://jinjibu.jp/news/detl/26948/" target="_blank" rel="noopener">管理職向けマネジメント支援アプリ「『上司力』向上アプリ」、提供開始</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-10-05</span>
+                  日本の人事部（ニュース）
+                </span>
+              </div>
+              <p class="summary">〜 ハラスメント予防を入口に、管理職の成長を毎日の業務の中で支援 〜クレアティー・サービス株式会社（本社：東京都千代田区、代表取締役：佐藤貴史）は、管理職向けマネジメント支援アプリ「上司力」向上アプ...</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://rc.persol-group.co.jp/thinktank/thinktank-column/202610010001/" target="_blank" rel="noopener">優秀な管理職を選ぶだけでは進まない後継者育成―サクセッション・プランに必要な挑戦経験と育成プロセス</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-10-01</span>
+                  パーソル総合研究所（コラム）
+                </span>
+              </div>
+              <p class="summary">優秀な管理職を選ぶだけでは進まない後継者育成―サクセッション・プランに必要な挑戦経験と育成プロセス</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://jinjibu.jp/news/detl/26890/" target="_blank" rel="noopener">実務で差がつくガバナンス・内部監査・財務の専門Eラーニング「ABラーニング™」を10月1日より提供開始</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-09-30</span>
+                  日本の人事部（ニュース）
+                </span>
+              </div>
+              <p class="summary">1話15分の「スモールユニット&amp;reg;方式」で、管理職・経営層から若手・中堅まで、組織のガバナンス強化と専門人材の育成を支援国際資格講座などを展開するパスメイクグループのアビタス（本社東京都渋谷区、代表...</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://jinjibu.jp/news/detl/26887/" target="_blank" rel="noopener">管理職という仕事についての意識調査</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-09-23</span>
+                  日本の人事部（サービス）
+                </span>
+              </div>
+              <p class="summary">管理職は「罰ゲーム」？一般社員の約8割、管理職の約6割が、「管理職は損」だと回答／一般社員は、約8割が「将来管理職になりたくない」と回答人財サービスのグローバルリーダーであるAdecco Groupの日本法人で、...</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://rc.persol-group.co.jp/column/solution-column/202609150000/" target="_blank" rel="noopener">コア人材の不足とダイバーシティの壁を越える！メンバーの主体性・独自性を活かす、リーダー行動のアップデート ～最新の調査・研究とZOZOの実践から～（Think &amp; Learn Day 2026夏）</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-09-15</span>
+                  パーソル総合研究所（コラム）
+                </span>
+              </div>
+              <p class="summary">コア人材の不足とダイバーシティの壁を越える！メンバーの主体性・独自性を活かす、リーダー行動のアップデート ～最新の調査・研究とZOZOの実践から～（Think &amp; Learn Day 2026夏）</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://rc.persol-group.co.jp/column/solution-column/202608201000/" target="_blank" rel="noopener">営業KPIを成果につなげるマネジメントとは　～メンバーが自律的に動く営業チームの作り方～</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-08-20</span>
+                  パーソル総合研究所（コラム）
+                </span>
+              </div>
+              <p class="summary">営業KPIを成果につなげるマネジメントとは　～メンバーが自律的に動く営業チームの作り方～</p>
+              
+            </div></div>
+        <div class="theme-section" style="border-left:4px solid #10B981; padding-left:16px; margin-bottom:28px;">
+          <h3 class="highlight-group-title" style="color:#10B981">
+            人事担当者の注目トピック（20本）<span style="color:var(--text-sub);font-size:13px;margin-left:8px;">制度・法改正・HRトレンド</span>
+          </h3>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://hrzine.jp/news/detail/8194" target="_blank" rel="noopener">業務タスクの「人とAIの最適配置」を可視化する新サービス「GROW-AX」を提供開始—IGS</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:var(--blue-bg);color:var(--blue)">2026-10-09</span>
+                  HRzine
+                </span>
+              </div>
+              <p class="summary">業務タスクの「人とAIの最適配置」を可視化する新サービス「GROW-AX」を提供開始—IGS</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://rc.persol-group.co.jp/thinktank/thinktank-column/202610090001/" target="_blank" rel="noopener">答えても変わらない―従業員サーベイが形骸化する理由</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:var(--blue-bg);color:var(--blue)">2026-10-09</span>
+                  パーソル総合研究所（コラム）
+                </span>
+              </div>
+              <p class="summary">答えても変わらない―従業員サーベイが形骸化する理由</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://hrzine.jp/article/detail/7920" target="_blank" rel="noopener">経営統合で掲げた「ライフストアの実現」に邁進するウエルシアHD　課題の人材確保にどう向き合っているか</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:var(--blue-bg);color:var(--blue)">2026-10-08</span>
+                  HRzine
+                </span>
+              </div>
+              <p class="summary">調剤併設型ドラッグストア「ウエルシア薬局」を全国展開するウエルシアホールディングス株式会社。2025年12月に株式会社ツルハホールディングスと経営統合し、グループのビジョン「ライフストアの実現」に向けて新たな一歩を踏み出した。課題はそのため</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://hrzine.jp/news/detail/8191" target="_blank" rel="noopener">成豊建設の採用ブランディングを支援　魅力の言語化からMVV策定まで伴走—TalentX</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:var(--blue-bg);color:var(--blue)">2026-10-08</span>
+                  HRzine
+                </span>
+              </div>
+              <p class="summary">成豊建設の採用ブランディングを支援　魅力の言語化からMVV策定まで伴走—TalentX</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://hrzine.jp/news/detail/8190" target="_blank" rel="noopener">山陰合同銀行が新入行員91名に「Monoxer」を試験導入　資格学習や研修の定着度を可視化—モノグサ</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:var(--blue-bg);color:var(--blue)">2026-10-08</span>
+                  HRzine
+                </span>
+              </div>
+              <p class="summary">山陰合同銀行が新入行員91名に「Monoxer」を試験導入　資格学習や研修の定着度を可視化—モノグサ</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://hrzine.jp/news/detail/8189" target="_blank" rel="noopener">女性管理職比率は業種で差、人的資本開示は女性・エンゲージメント中心—三菱UFJ信託銀行調べ</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:var(--blue-bg);color:var(--blue)">2026-10-08</span>
+                  HRzine
+                </span>
+              </div>
+              <p class="summary">女性管理職比率は業種で差、人的資本開示は女性・エンゲージメント中心—三菱UFJ信託銀行調べ</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://jinjibu.jp/news/detl/26904/" target="_blank" rel="noopener">転職活動の選考プロセスに関する調査</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:var(--blue-bg);color:var(--blue)">2026-10-08</span>
+                  日本の人事部（ニュース）
+                </span>
+              </div>
+              <p class="summary">理想の選考は「期間1ヵ月未満・面接2回以下」約4割が「遅さ」で離脱、不透明な進め方への不満も 採用の鍵は「スピードと透明性」人材紹介業の株式会社ワークポート（本社：東京都品川区、福岡県福岡市博多区 代表...</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://jinjibu.jp/news/detl/26966/" target="_blank" rel="noopener">毎月勤労統計調査　令和8年8月分結果速報</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:var(--blue-bg);color:var(--blue)">2026-10-08</span>
+                  日本の人事部（ニュース）
+                </span>
+              </div>
+              <p class="summary">厚生労働省は、毎月勤労統計調査 2026(令和8)年8月分結果速報を発表しました。【調査結果の概要】※1 ()内は前年同月比を示す。※2 断りのない限り事業所規模5人以上の結果。1 名目賃金(一人平均) 【7ページ 第1表...</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://toyokeizai.net/articles/-/958333?utm_source=rss&amp;utm_medium=http&amp;utm_campaign=link_back" target="_blank" rel="noopener">文房具はお小遣いの中から買わせない？｢自活力｣を育むお金のルールと､20年前から先進的だった灘中の｢お金の教育｣ | キャリア・教育 | 東洋経済オンライン</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:var(--blue-bg);color:var(--blue)">2026-10-08</span>
+                  東洋経済オンライン
+                </span>
+              </div>
+              <p class="summary">4人の子を全員東大理科三類に送り出した佐藤亮子さんが､｢お金の教育｣をテーマに語ります。子どもの自活力を育むために家庭でできることや､お小遣いの渡し方､金融リテラシーの実体験など､今こそ考えたいヒン…</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://toyokeizai.net/articles/-/959659?utm_source=rss&amp;utm_medium=http&amp;utm_campaign=link_back" target="_blank" rel="noopener">糞尿のにおいだけでなく｢虐待の痕跡｣も…？記者が｢老人ホーム｣で感じた&quot;強烈な違和感&quot;　漫画｢介護とハイエナ｣（第2話） | ライフ | 東洋経済オンライン</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:var(--blue-bg);color:var(--blue)">2026-10-08</span>
+                  東洋経済オンライン
+                </span>
+              </div>
+              <p class="summary">2025年「介護崩壊元年」を迎えた日本――。急速に進む高齢化社会の中で、「人手不足」「老老介護」「悪徳業者」「社会保障費の増大」など様々な問題が浮き彫りとなり、いよいよ他人事ではいられなくなっている…</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://business.nikkei.com/atcl/gen/19/00618/092900009/" target="_blank" rel="noopener">40代転職で問われる「自己更新力」　PR会社45歳社長がスタートアップで再出発 (転職の葛藤　大手を辞めて)</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:var(--blue-bg);color:var(--blue)">2026-10-08</span>
+                  日経ビジネス
+                </span>
+              </div>
+              <p class="summary">アルバイトとして入社した老舗PR会社で25年以上のキャリアを積み、社長も務めていた蜷川昭文さん。45歳でスタートアップに一社員として転職しました。退任を決意した思いや異業種への転職で直面した壁、40代からの転職に求められる力を聞きました。</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://jinjibu.jp/news/detl/26906/" target="_blank" rel="noopener">【27卒】就活実態調査</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-10-07</span>
+                  日本の人事部（ニュース）
+                </span>
+              </div>
+              <p class="summary">レバレジーズ株式会社が運営する新卒学生向けキャリア支援サービス「キャリアチケット就職」は、2027年3月卒業予定の大学生・大学院生351名を対象に就職活動の実態調査を実施しました。＜調査サマリー＞8月末の27...</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://jinjibu.jp/news/detl/26926/" target="_blank" rel="noopener">AIネイティブ企業研修プラットフォーム「LearningOn（ラーニングオン）」提供開始</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-10-07</span>
+                  日本の人事部（ニュース）
+                </span>
+              </div>
+              <p class="summary">企業研修の準備から受講完了まで、研修担当者の仕事をAIで支える基盤へ。〜「Legal Learning」で培ったコンテンツと研修運用の知見を生かし、AIネイティブなプラットフォームで教材作成から配信・受講管理まで支...</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://jinjibu.jp/article/detl/hakusho/4191/" target="_blank" rel="noopener">人事部門の予算、増えた企業が4割強</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-10-07</span>
+                  日本の人事部（記事）
+                </span>
+              </div>
+              <p class="summary">人事部門が使える予算の変化について聞きました。「大幅に増えた」が7.8％、「やや増えた」が33.6％、「変わらない」が38.0％、「やや減った」が8.2％、「大幅に減った」が4.1％、「わからない」が8.2％でした。</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://business.nikkei.com/atcl/NBD/19/00108/00401/" target="_blank" rel="noopener">高市流人事の舞台裏　「ライバルの懐刀」抜てきの深謀遠慮 (ニュースを突く)</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-10-07</span>
+                  日経ビジネス
+                </span>
+              </div>
+              <p class="summary">高市早苗首相が初の内閣改造・自民党役員人事を行った。肝煎り政策推進への陣立てを整えた形だが、政権運営の課題は少なくない。</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://business.nikkei.com/atcl/gen/19/00265/092900155/" target="_blank" rel="noopener">グローバル人材育成は「英語研修後」が勝負　成果の分析・評価・改善がポイント (その英語学習法は間違い)</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-10-07</span>
+                  日経ビジネス
+                </span>
+              </div>
+              <p class="summary">海外で活躍できる人材を増やすために、企業はどのような育成制度をつくればいいのでしょうか。グローバル人材育成について、英語コーチングスクール・トライズでの経験を基に全3回にわたって考えていく連載の最終回です。</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://business.nikkei.com/atcl/seminar/21nv/00065/092800004/" target="_blank" rel="noopener">大手の初任給30万円超に対抗　中小企業、新卒採用5つのポイント (人材採用の「ひと手間」)</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-10-07</span>
+                  日経ビジネス
+                </span>
+              </div>
+              <p class="summary">採用にかける時間も費用も増えているのに、思うような成果が出ない。今、新卒採用市場で何が起きているのか。中小企業は活路はあるのか。採用コンサルタントの谷出正直氏に、新卒採用の勝ち筋を聞いた。</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://hrzine.jp/article/detail/7839" target="_blank" rel="noopener">テクノプロの事業構造変革を支える「タレントアクイジション」と「タレントマネジメント」の連携とは</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-10-06</span>
+                  HRzine
+                </span>
+              </div>
+              <p class="summary">国内最大規模のTOBを経て、エンジニア派遣会社からソリューション提供企業へと事業構造の変革を進める株式会社テクノプロ。同社は数年後の再上場を見据え、人的資本経営を強力に推進している。その活動の中で1つのカギとなるのが、数年後の成長戦略に基づ</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://hrzine.jp/news/detail/8185" target="_blank" rel="noopener">「PeopleX AI面接」を書類選考から定着まで支援する採用プラットフォームに強化—PeopleX</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-10-06</span>
+                  HRzine
+                </span>
+              </div>
+              <p class="summary">「PeopleX AI面接」を書類選考から定着まで支援する採用プラットフォームに強化—PeopleX</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://hrzine.jp/news/detail/8181" target="_blank" rel="noopener">人事評価に7割超が不満、AI評価には68.5%が賛成—Job総研調べ</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-10-06</span>
+                  HRzine
+                </span>
+              </div>
+              <p class="summary">人事評価に7割超が不満、AI評価には68.5%が賛成—Job総研調べ</p>
+              
+            </div></div>
+        <div class="theme-section" style="border-left:4px solid #8B5CF6; padding-left:16px; margin-bottom:28px;">
+          <h3 class="highlight-group-title" style="color:#8B5CF6">
+            企業事例（5本）<span style="color:var(--text-sub);font-size:13px;margin-left:8px;">1on1・対話・組織開発の導入事例</span>
+          </h3>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://hrzine.jp/news/detail/8192" target="_blank" rel="noopener">池田泉州HDが約4000名に「SmartSkill Campus」を導入—レビックグローバル</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:var(--blue-bg);color:var(--blue)">2026-10-08</span>
+                  HRzine
+                </span>
+              </div>
+              <p class="summary">池田泉州HDが約4000名に「SmartSkill Campus」を導入—レビックグローバル</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://rc.persol-group.co.jp/column/solution-column/202610080000/" target="_blank" rel="noopener">なぜ「正しい計画」があっても揺らぐのか ～「プロジェクトの詰まり」を解きほぐす“設計”の話 ⑥（最終回）～</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:var(--blue-bg);color:var(--blue)">2026-10-08</span>
+                  パーソル総合研究所（コラム）
+                </span>
+              </div>
+              <p class="summary">なぜ「正しい計画」があっても揺らぐのか ～「プロジェクトの詰まり」を解きほぐす“設計”の話 ⑥（最終回）～</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://rc.persol-group.co.jp/column/solution-column/202610010000/" target="_blank" rel="noopener">なぜ誰も反対していないのに止まるのか ～「プロジェクトの詰まり」を解きほぐす“設計”の話 ⑤～</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-10-01</span>
+                  パーソル総合研究所（コラム）
+                </span>
+              </div>
+              <p class="summary">なぜ誰も反対していないのに止まるのか ～「プロジェクトの詰まり」を解きほぐす“設計”の話 ⑤～</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://rc.persol-group.co.jp/column/solution-column/202609140000/" target="_blank" rel="noopener">なぜ手戻りは繰り返されるのか ～「プロジェクトの詰まり」を解きほぐす“設計”の話 ④～</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-09-14</span>
+                  パーソル総合研究所（コラム）
+                </span>
+              </div>
+              <p class="summary">なぜ手戻りは繰り返されるのか ～「プロジェクトの詰まり」を解きほぐす“設計”の話 ④～</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://rc.persol-group.co.jp/column/solution-column/202609080000/" target="_blank" rel="noopener">なぜ計画通りに進めても崩れるのか ～「プロジェクトの詰まり」を解きほぐす“設計”の話 ③～</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-09-08</span>
+                  パーソル総合研究所（コラム）
+                </span>
+              </div>
+              <p class="summary">なぜ計画通りに進めても崩れるのか ～「プロジェクトの詰まり」を解きほぐす“設計”の話 ③～</p>
+              
+            </div></div>
+        <div class="theme-section" style="border-left:4px solid #64748B; padding-left:16px; margin-bottom:28px;">
+          <h3 class="highlight-group-title" style="color:#64748B">
+            その他人事界隈の注目トピック（25本）
+          </h3>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://hrzine.jp/news/detail/8193" target="_blank" rel="noopener">メンタル不調時、正社員の6割以上が「職場に相談できる環境はない」と回答—レバレジーズ調べ</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:var(--blue-bg);color:var(--blue)">2026-10-08</span>
+                  HRzine
+                </span>
+              </div>
+              <p class="summary">メンタル不調時、正社員の6割以上が「職場に相談できる環境はない」と回答—レバレジーズ調べ</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://jinjibu.jp/news/detl/26964/" target="_blank" rel="noopener">【書籍紹介】『人材開発・組織開発の臨床知』（中原淳：著）東京大学出版会より刊行</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:var(--blue-bg);color:var(--blue)">2026-10-08</span>
+                  日本の人事部（ニュース）
+                </span>
+              </div>
+              <p class="summary">『人材開発・組織開発の臨床知』（中原淳：著）が、東京大学出版会より刊行されました。科学知を追究してきた著者が切り拓く、新たな地平。現場で駆動する臨床知の秘密を解き明かす科学知だけではつかみとれない...</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://jinjibu.jp/news/detl/26892/" target="_blank" rel="noopener">【書籍紹介】『ガラスの天井は破られたか 高市総理と女性政策のゆくえ』（坂東眞理子：著）笠間書院より刊行</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:var(--blue-bg);color:var(--blue)">2026-10-08</span>
+                  日本の人事部（記事）
+                </span>
+              </div>
+              <p class="summary">時間に追われ疲弊している人は少なくありません。焦燥感の背景にはどんな心理的メカニズムがあるのでしょうか。千葉大学大学院の一川誠さんに、「体感時間」が伸縮する仕組みや、生体リズムに合わせた業務設計、...</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://diamond.jp/articles/-/400634" target="_blank" rel="noopener">【人生まで「デザイン」する】松下幸之助が見抜いた“デザイン”という言葉の意外な広がり - 概念シフト</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:var(--blue-bg);color:var(--blue)">2026-10-08</span>
+                  ダイヤモンド・オンライン
+                </span>
+              </div>
+              <p class="summary">「デザイン」と聞いて、何を思い浮かべるだろうか。かつては製品の形や色を整える言葉だったが、今ではサービスや組織、さらには人生まで「デザインする」と表現する。松下幸之助が「これからはデザインの時代だ」と見抜いてから、その言葉はなぜここまで意味</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://president.jp/articles/-/119808" target="_blank" rel="noopener">あえてロシア･中国･北朝鮮に1課ずつ…警察庁が｢新組織｣をつくってでも守りたい&quot;国家機密以外の重要情報&quot;</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:var(--blue-bg);color:var(--blue)">2026-10-08</span>
+                  プレジデントオンライン
+                </span>
+              </div>
+              <p class="summary">警察庁は外国のスパイ活動に対する情報収集能力の強化を狙い、2027年4月に「外事情報局」を新設するとしている。軍事ジャーナリストの宮田…</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://business.nikkei.com/atcl/NBD/19/special/02664/" target="_blank" rel="noopener">ゼンショー　逆転の法則　小川賢太郎が遺した理念と実践</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:var(--blue-bg);color:var(--blue)">2026-10-08</span>
+                  日経ビジネス
+                </span>
+              </div>
+              <p class="summary">後発から、競合を追い抜き、日本で初めて売上高1兆円を超えた外食企業がある。「はま寿司」や「すき家」を展開するゼンショーホールディングスだ。成長の源泉が、「世界から飢餓と貧困を撲滅する」という壮大な企業理念。その理念を軸に逆算思考で設計された</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://business.nikkei.com/atcl/NBD/19/mokuji/00390/" target="_blank" rel="noopener">2026年10月12日号 (バックナンバー目次)</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:var(--blue-bg);color:var(--blue)">2026-10-08</span>
+                  日経ビジネス
+                </span>
+              </div>
+              <p class="summary">後発から競合を追い抜き、日本で初めて売上高1兆円を超えた外食企業がある。「はま寿司」や「すき家」を展開するゼンショーホールディングスだ。成長の源泉が、「世界から飢餓と貧困を撲滅する」という企業理念。その理念を軸に逆算思考で設計された仕組みや</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://hrzine.jp/news/detail/8188" target="_blank" rel="noopener">レオパレス21が「COMPANY Talent Management」シリーズの利用を開始—WHI</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-10-07</span>
+                  HRzine
+                </span>
+              </div>
+              <p class="summary">レオパレス21が「COMPANY Talent Management」シリーズの利用を開始—WHI</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://hrzine.jp/news/detail/8186" target="_blank" rel="noopener">AI活用の二極化解消に向けた新機能「バディエージェント」を10月末提供—エクサウィザーズ</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-10-06</span>
+                  HRzine
+                </span>
+              </div>
+              <p class="summary">AI活用の二極化解消に向けた新機能「バディエージェント」を10月末提供—エクサウィザーズ</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://hrzine.jp/news/detail/8184" target="_blank" rel="noopener">内定期間に受けた・最も良かったフォロー、ともに「懇親会」が首位—ALL DIFFERENT調べ</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-10-06</span>
+                  HRzine
+                </span>
+              </div>
+              <p class="summary">内定期間に受けた・最も良かったフォロー、ともに「懇親会」が首位—ALL DIFFERENT調べ</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://hrzine.jp/news/detail/8182" target="_blank" rel="noopener">損保ジャパンが「本人同意に基づく転居転勤運用」へ転換　転勤意向を毎年申告—ＳＯＭＰＯホールディングス</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-10-06</span>
+                  HRzine
+                </span>
+              </div>
+              <p class="summary">損保ジャパンが「本人同意に基づく転居転勤運用」へ転換　転勤意向を毎年申告—ＳＯＭＰＯホールディングス</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://jinjibu.jp/news/detl/26954/" target="_blank" rel="noopener">労働経済動向調査（令和８(2026)年８月）の結果を公表</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-10-06</span>
+                  日本の人事部（ニュース）
+                </span>
+              </div>
+              <p class="summary">厚生労働省では、このほど、労働経済動向調査(令和8 (2026)年8月)の結果を取りまとめましたので、公表します。「労働経済動向調査」は、景気の変動が雇用などに及ぼしている影響や今後の見通しについて調査し、労...</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://rc.persol-group.co.jp/thinktank/thinktank-column/202610060001/" target="_blank" rel="noopener">AIは人を賢くするのか―AI活用による「育成阻害」</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-10-06</span>
+                  パーソル総合研究所（コラム）
+                </span>
+              </div>
+              <p class="summary">AIは人を賢くするのか―AI活用による「育成阻害」</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://rc.persol-group.co.jp/thinktank/thinktank-column/202610050001/" target="_blank" rel="noopener">AI時代のハイパフォーマーは何が違うのか―「速く動けるいいヤツ」の時代の終わり</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-10-05</span>
+                  パーソル総合研究所（コラム）
+                </span>
+              </div>
+              <p class="summary">AI時代のハイパフォーマーは何が違うのか―「速く動けるいいヤツ」の時代の終わり</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://hrzine.jp/news/detail/8178" target="_blank" rel="noopener">生成AIパスポート、2027年試験からシラバス大幅改訂　資格更新テストも新設—GUGA</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-10-02</span>
+                  HRzine
+                </span>
+              </div>
+              <p class="summary">生成AIパスポート、2027年試験からシラバス大幅改訂　資格更新テストも新設—GUGA</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://jinjibu.jp/news/detl/26936/" target="_blank" rel="noopener">一般職業紹介状況(令和8年8月分)について</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-10-02</span>
+                  日本の人事部（ニュース）
+                </span>
+              </div>
+              <p class="summary">ポイント令和8年8月の有効求人倍率は1.18倍で、前月と同水準。令和8年8月の新規求人倍率は2.06倍で、前月と比べて0.04ポイント低下。厚生労働省では、公共職業安定所（ハローワーク）における求人、求職、就職の...</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://jinjibu.jp/news/detl/26937/" target="_blank" rel="noopener">労働力調査（基本集計） 2026年（令和8年）8月分</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-10-02</span>
+                  日本の人事部（ニュース）
+                </span>
+              </div>
+              <p class="summary">総務省は、労働力調査（基本集計）2026年（令和8年）8月分の結果を公表しました。■ポイント就業者数就業者数は6849万人。前年同月に比べ14万人の増加。2か月ぶりの増加完全失業者数完全失業者数は180万人。前年同...</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://rc.persol-group.co.jp/thinktank/thinktank-column/202610020001/" target="_blank" rel="noopener">AIで生産性は上がるのか―個人の時短が組織成果につながらない３つの理由</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-10-02</span>
+                  パーソル総合研究所（コラム）
+                </span>
+              </div>
+              <p class="summary">AIで生産性は上がるのか―個人の時短が組織成果につながらない３つの理由</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://jinjibu.jp/news/detl/26929/" target="_blank" rel="noopener">SMBC、「HUMAN CAPITAL STORY 2026」を発行</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-10-01</span>
+                  日本の人事部（ニュース）
+                </span>
+              </div>
+              <p class="summary">「SMBC GROUP HUMAN CAPITAL STORY 2026」の発行について株式会社三井住友フィナンシャルグループ (執行役社長グループ CEO: 中島達、以下当社グループを総称して「SMBC グループ」)は、本日当社グループと</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://jinjibu.jp/news/detl/26899/" target="_blank" rel="noopener">カスタマーハラスメント（カスハラ）に関する実態調査</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-09-30</span>
+                  日本の人事部（ニュース）
+                </span>
+              </div>
+              <p class="summary">カスハラの方針「整備されていない」61.3%、相談窓口「周知していない」68.3%。10月施行のカスハラ対策義務化、問われる企業姿勢〜直近1年間で5人に1人（19.8%）が勤務先でカスハラを受けた経験、経験者の約4人に...</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://jinjibu.jp/news/detl/26867/" target="_blank" rel="noopener">戦略実行の実態調査2026</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-09-24</span>
+                  日本の人事部（サービス）
+                </span>
+              </div>
+              <p class="summary">現場では実力の3割が未発揮のまま。なぜ？会社の戦略が、現場の行動になっていない。本来の実力の3割が、発揮されないまま失われている。分かれ目は、立場でも、戦略の理解度でもなかった。―― 全国570名の実態調...</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://jinjibu.jp/news/detl/26852/" target="_blank" rel="noopener">仕事での生成AI利用に男女13.6ptの差、背景に雇用形態の分布差／女性AI人材白書2026</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-09-16</span>
+                  日本の人事部（サービス）
+                </span>
+              </div>
+              <p class="summary">AI利用女性の収入増の割合は、非利用者の約2.7倍。一方、生成AIヘビーユーザーでも「とても使いこなせている」と思う女性は約5人に1人、約1.5倍の男女差も。鍵は「AI自信の壁」の乗り越え方一般社団法人Women AI ...</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://jinjibu.jp/news/detl/26832/" target="_blank" rel="noopener">全国の中小企業経営者を対象とした「社長さん白書2026」の調査結果を発表</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-09-15</span>
+                  日本の人事部（サービス）
+                </span>
+              </div>
+              <p class="summary">インフレ長期化と「人」に係る経営課題が浮き彫りにアクサ生命保険株式会社(本社:東京都港区、代表取締役社長兼CEO: クリストフ・アヴネル、以下「アクサ生命」)は、全国の中小企業経営者 18,644人を対象とした「...</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://rc.persol-group.co.jp/column/solution-column/202609141000/" target="_blank" rel="noopener">第2回 ATDアルムナイイベント &quot;ATD Connect＋&quot;開催レポート ATD ICE 2026|変化の中で未来を主導するのは誰か</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-09-14</span>
+                  パーソル総合研究所（コラム）
+                </span>
+              </div>
+              <p class="summary">第2回 ATDアルムナイイベント &quot;ATD Connect＋&quot;開催レポート ATD ICE 2026|変化の中で未来を主導するのは誰か</p>
+              
+            </div>
+            <div class="card highlight-card">
+              <div class="card-header">
+                <a href="https://rc.persol-group.co.jp/column/solution-column/202608311000/" target="_blank" rel="noopener">「AIを使うほど、賢くなくなる」——“認知負債”という組織リスク</a>
+                <span class="meta">
+                  <span class="date-badge" style="background:#F1F5F9;color:var(--text-sub)">2026-08-31</span>
+                  パーソル総合研究所（コラム）
+                </span>
+              </div>
+              <p class="summary">「AIを使うほど、賢くなくなる」——“認知負債”という組織リスク</p>
+              
+            </div></div>
+  </div>
+
+  <!-- Section 2: トレンド分析 -->
+  <div class="section">
+    <h2 class="section-title">
+      <span class="section-num" style="background:var(--green)">2</span>
+      HR界隈トレンド分析
+    </h2>
+    <div class="trend-grid">
+      <div class="trend-box">
+        <h3><span class="dot" style="background:var(--blue)"></span>1on1・マネジメント領域</h3>
+        <p>管理職の役割と教育が重視されており、パーソル総合研究所のコラムでは「キャリア開発風土醸成へ―管理職の役割と求められる教育」が複数回取り上げられています。AIを活用したマネジメント支援も進み、KAKEAIは「Kakeai AI 1on1」を提供開始し、HQとNEWONEは「プロコーチ×AIで管理職研修後の行動変容を可視化する伴走サービス」を共同開発しました。しかし、ダイヤモンド・オンラインの「ハラスメントが怖くて指示が出せない上司」やレバレジーズの調査で「メンタル不調時、職場に相談できる環境はない」と回答する人が多いなど、マネジメント層の課題も顕在化しています。管理職向けマネジメント支援アプリの提供開始や、豊田通商が若手・管理職のラーニングアジリティ向上へ研修を実施するなど、具体的な支援策も講じられています。組織のダイバーシティ推進や従業員エンゲージメント向上には、リーダー行動のアップデートが不可欠であり、女性管理職比率の向上も引き続き重要なテーマです。</p>
+      </div>
+      <div class="trend-box">
+        <h3><span class="dot" style="background:var(--green)"></span>人事制度・採用・育成</h3>
+        <p>採用においては、日経ビジネスが報じる「現場はこの人と働きたいか」を基準とするなど、社員目線を重視する傾向が見られます。中小企業が新卒採用で大手に対抗するための戦略も注目され、ウエルシアHDのように人材確保に課題を抱える企業は採用ブランディングにも力を入れています。人材育成では、山陰合同銀行が「Monoxer」を試験導入し研修の定着度を可視化するなど、効果測定を重視した取り組みが進んでいます。人事評価に関しては、Job総研の調査で「人事評価に7割超が不満」とされており、損保ジャパンが「本人同意に基づく転居転勤運用」へ転換するなど、従業員の意向を尊重する制度への見直しが進んでいます。タレントアクイジションとタレントマネジメントの連携強化は、テクノプロの事業構造変革を支える事例として紹介されており、戦略的な人事制度の構築が求められています。</p>
+      </div>
+      <div class="trend-box">
+        <h3><span class="dot" style="background:var(--purple)"></span>HRテック・AI活用</h3>
+        <p>HRテック領域ではAIの活用が加速しており、KAKEAIの「Kakeai AI 1on1」やPeopleXの「PeopleX AI面接」など、採用からマネジメントまで幅広いプロセスにAIが導入されています。IGSは「GROW-AX」を提供開始し、業務タスクにおける「人とAIの最適配置」を可視化するなど、AIと人間の協働を最適化するソリューションが登場しています。AIネイティブ企業研修プラットフォーム「LearningOn」の提供や、生成AIパスポートのシラバス改訂など、AI時代に対応した人材育成・教育コンテンツも充実しています。一方で、パーソル総合研究所のコラムでは「AI活用による育成阻害」や「AIを使うほど、賢くなくなる」といったAI利用の負の側面や、生産性向上における課題も指摘されています。Job総研の調査で「AI評価には68.5%が賛成」と高い期待が寄せられており、AIが人事評価の公平性や効率性を高める可能性が模索されています。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3: 企画案 -->
+  <div class="section">
+    <h2 class="section-title">
+      <span class="section-num" style="background:var(--amber)">3</span>
+      1on1総研 コンテンツ企画案（6本）
+    </h2>
+    <p style="font-size:13px; color:var(--text-sub); margin-bottom:14px;">
+      <span class="plan-badge" style="background:var(--blue)">Branding</span> 第一想起獲得・専門性訴求（6本）
+      <span style="margin: 0 8px;">|</span>
+      <span class="plan-badge" style="background:var(--amber)">Lead</span> 資料DL誘導（0本）
+    </p>
+    <div class="plan-grid">
+      
+            <div class="card plan-card" style="border-left: 4px solid #3B82F6">
+              <div class="plan-header">
+                <span class="plan-badge" style="background:#3B82F6">Branding</span>
+                <h3>管理職の「罰ゲーム化」を乗り越える：1on1が変えるマネジメントの未来</h3>
+              </div>
+              <table class="plan-table">
+                <tr><th>想定読者</th><td>人事担当者、経営層、マネジャー</td></tr>
+                <tr><th>切り口</th><td>管理職が「罰ゲーム」と認識される現状の背景を深掘りし、その意識を変革するための1on1の役割と可能性を論じる。管理職がやりがいを感じ、部下との関係性を強化するための具体的なアプローチを提示し、組織全体のマネジメント文化の再構築を提言する。</td></tr>
+                <tr><th>使用するネタ</th><td>管理職が「罰ゲーム」と認識される調査結果 / ハラスメントを恐れて指示できない上司の増加 / 相談が来ない上司たちの課題</td></tr>
+                <tr><th>接続する資料</th><td><span class="resource-tag">マネジャーのための1on1完全ガイド</span></td></tr>
+                <tr><th>Why Now</th><td>管理職のモチベーション低下が組織全体の生産性やエンゲージメントに直結する課題として顕在化しているため。</td></tr>
+              </table>
+            </div>
+            <div class="card plan-card" style="border-left: 4px solid #3B82F6">
+              <div class="plan-header">
+                <span class="plan-badge" style="background:#3B82F6">Branding</span>
+                <h3>「静かな退職」を本音で語る：エンゲージメント調査が機能不全に陥る組織の病理と1on1の可能性</h3>
+              </div>
+              <table class="plan-table">
+                <tr><th>想定読者</th><td>人事担当者、経営層、マネジャー</td></tr>
+                <tr><th>切り口</th><td>多くの従業員が「静かな退職」に共感し、従来のエンゲージメント調査が「役に立たない」と認識される現状を分析する。その背景にある組織の課題を明らかにし、表面的な調査結果だけでなく、個々の本音を引き出し、具体的な改善行動につなげる1on1の重要性と有効性を考察する。</td></tr>
+                <tr><th>使用するネタ</th><td>静かな退職への共感とエンゲージメント調査の機能不全に関する調査 / メンタル不調時の相談環境の不足</td></tr>
+                <tr><th>接続する資料</th><td><span class="resource-tag">1on1総研 調査レポート（各種）</span></td></tr>
+                <tr><th>Why Now</th><td>従業員のエンゲージメント低下が企業の競争力に直結する中、既存の施策が機能不全に陥っているという問題意識が高まっているため。</td></tr>
+              </table>
+            </div>
+            <div class="card plan-card" style="border-left: 4px solid #3B82F6">
+              <div class="plan-header">
+                <span class="plan-badge" style="background:#3B82F6">Branding</span>
+                <h3>AI時代におけるマネジャーの「人間力」再定義：AIに相談が来ない上司が陥るワナ</h3>
+              </div>
+              <table class="plan-table">
+                <tr><th>想定読者</th><td>経営層、人事担当者、マネジャー</td></tr>
+                <tr><th>切り口</th><td>AIの進化により業務効率化が進む一方で、「AIに相談が来るが、上司には来ない」という新たなマネジメント課題が浮上している現状を指摘する。AIでは代替できないマネジャーの「人間力」、すなわち部下のモチベーションを引き出し、育成し、信頼関係を築くための対話の重要性を深掘りする。</td></tr>
+                <tr><th>使用するネタ</th><td>相談が来ない上司たち—AI環境のマネジメントのアップデート / AI活用による育成阻害の可能性 / AI時代のハイパフォーマーの変化</td></tr>
+                <tr><th>接続する資料</th><td><span class="resource-tag">KAKEAIサービス資料</span></td></tr>
+                <tr><th>Why Now</th><td>AI技術の急速な進化がマネジメントのあり方そのものを問い直し、人間のマネジャーが担うべき役割が再定義されつつあるため。</td></tr>
+              </table>
+            </div>
+            <div class="card plan-card" style="border-left: 4px solid #3B82F6">
+              <div class="plan-header">
+                <span class="plan-badge" style="background:#3B82F6">Branding</span>
+                <h3>人的資本経営の真価：「事業戦略・人事連動スコア」を高めるための1on1戦略</h3>
+              </div>
+              <table class="plan-table">
+                <tr><th>想定読者</th><td>経営層、人事担当者、HRBP</td></tr>
+                <tr><th>切り口</th><td>「事業戦略・人事連動スコア」が低い企業が多いという調査結果を受け、人的資本経営を実効性のあるものにするための戦略的な1on1の役割を提唱する。経営戦略と人事施策、そして個々の従業員の行動をいかに連動させるか、その具体的なロードマップと1on1による戦略実行支援の可能性を解説する。</td></tr>
+                <tr><th>使用するネタ</th><td>事業戦略・人事連動スコアの公表と現状の課題 / 戦略実行における現場の実力未発揮 / 戦略人事に必要な能力・スキルの不足</td></tr>
+                <tr><th>接続する資料</th><td><span class="resource-tag">0から始める！1on1導入ガイドライン</span></td></tr>
+                <tr><th>Why Now</th><td>人的資本開示義務化が進み、事業戦略と人事戦略の連動が経営の重要課題となっている中で、その実効性を高める具体的な手段が求められているため。</td></tr>
+              </table>
+            </div>
+            <div class="card plan-card" style="border-left: 4px solid #3B82F6">
+              <div class="plan-header">
+                <span class="plan-badge" style="background:#3B82F6">Branding</span>
+                <h3>「前例がない」がイノベーションを阻む：心理的安全性を育む1on1の挑戦</h3>
+              </div>
+              <table class="plan-table">
+                <tr><th>想定読者</th><td>経営層、人事担当者、マネジャー</td></tr>
+                <tr><th>切り口</th><td>新しい企画や提案が「前例がない」という理由で却下される企業が3割に上る現状を問題視し、イノベーションを阻害する組織文化の根源を探る。心理的安全性の低い組織で、部下が自由に発言し、挑戦できる環境をいかに1on1で醸成していくか、その具体的な対話のあり方と組織への波及効果を論じる。</td></tr>
+                <tr><th>使用するネタ</th><td>新しい企画や提案が「前例がない」という理由で却下される実態 / 組織の違和感、リーダーが変えるべき点</td></tr>
+                <tr><th>接続する資料</th><td><span class="resource-tag">上司・部下の信頼関係16段階シート</span></td></tr>
+                <tr><th>Why Now</th><td>変化の激しい時代において、企業の競争力を維持・向上させるためには、組織内のイノベーション創出が不可欠であり、その土台となる心理的安全性の重要性が再認識されているため。</td></tr>
+              </table>
+            </div>
+            <div class="card plan-card" style="border-left: 4px solid #3B82F6">
+              <div class="plan-header">
+                <span class="plan-badge" style="background:#3B82F6">Branding</span>
+                <h3>「働き方改革」のその先へ：生産性向上と社員の「元気」を両立するマネジメント</h3>
+              </div>
+              <table class="plan-table">
+                <tr><th>想定読者</th><td>経営層、人事担当者、マネジャー</td></tr>
+                <tr><th>切り口</th><td>「働き方改革」から10年が経過し、長時間労働の是正は進んだものの、業務の偏りや現場の混乱、そして「日本人は働かなくなったのか」という問いが生まれている現状を分析する。単なる時間短縮ではなく、社員一人ひとりの「元気」を引き出し、生産性向上と働きがいを両立させるためのマネジメント変革、特に1on1を通じた個へのアプローチの重要性を提示する。</td></tr>
+                <tr><th>使用するネタ</th><td>働き方改革後の日本の生産性の現状と課題 / 社員が誇りと自信を取り戻した組織の事例</td></tr>
+                <tr><th>接続する資料</th><td><span class="resource-tag">1on1総研 調査レポート（各種）</span></td></tr>
+                <tr><th>Why Now</th><td>働き方改革が次のフェーズに入り、量だけでなく質の高い働き方、そして従業員のエンゲージメントをいかに高めるかが問われているため。</td></tr>
+              </table>
+            </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Generated by hr_collector pipeline — 2026-10-09 02:44
+</footer>
+
+</body>
+</html>
